@@ -1,0 +1,283 @@
+<!--
+====================================================================
+  Masar Al-Mal (مسار المال) - Smart Financial Dashboard
+  Copyright (c) 2026 Eslam Qandil. All Rights Reserved.
+  Developer & Designer: Eslam Qandil
+====================================================================
+-->
+<!DOCTYPE html>
+<html lang="ar" direction="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسار المال - إعداد الدورة المالية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent-color: #4da3ff;
+            --text-light: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background: linear-gradient(135deg, #090d16 0%, #121826 50%, #1e1b4b 100%);
+            color: var(--text-light);
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .setup-container {
+            background: rgba(26, 32, 44, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .brand-badge {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.9);
+            color: #ffffff;
+            border-color: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .header-area { text-align: center; margin-bottom: 15px; }
+        .logo-area { font-size: 2rem; margin-bottom: 3px; text-shadow: 0 0 15px rgba(77, 163, 255, 0.4); }
+        .setup-title { font-size: 1.3rem; font-weight: 700; margin: 0; color: var(--text-light); }
+        .setup-subtitle { font-size: 0.8rem; color: var(--text-muted); margin: 3px 0 0 0; }
+
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 15px 0 8px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 4px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .form-row-equal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .form-group { text-align: right; margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 4px; color: var(--text-light); font-weight: 600; }
+
+        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; box-sizing: border-box; }
+        .input-wrapper input, .input-wrapper select {
+            width: 100%;
+            padding: 9px 32px 9px 10px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .input-wrapper input:focus, .input-wrapper select:focus {
+            outline: none; 
+            border-color: var(--accent-color); 
+            background: rgba(15, 23, 42, 0.9);
+            box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.25);
+        }
+
+        .input-icon { position: absolute; right: 10px; font-size: 0.95rem; color: var(--text-muted); pointer-events: none; }
+        .input-unit { position: absolute; left: 10px; font-size: 0.75rem; color: var(--text-muted); pointer-events: none; }
+
+        .tip-box {
+            background: rgba(77, 163, 255, 0.05);
+            border-right: 3px solid var(--accent-color);
+            padding: 8px 10px;
+            border-radius: 4px 10px 10px 4px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            margin-top: 5px;
+            border: 1px solid rgba(77, 163, 255, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%; 
+            padding: 12px; 
+            background: linear-gradient(135deg, #2563eb, #3b82f6, #60a5fa);
+            border: none; 
+            border-radius: 10px;
+            color: var(--text-light); 
+            font-size: 0.95rem; 
+            font-weight: 700; 
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4); 
+            margin-top: 10px;
+        }
+        .btn-submit:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(37, 99, 235, 0.6);
+        }
+        .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        .watermark {
+            text-align: center;
+            font-size: 9px;
+            color: #64748b;
+            letter-spacing: 1.5px;
+            margin-top: 12px;
+            text-transform: uppercase;
+        }
+
+        /* تعديلات مخصصة للشاشات الصغيرة جداً والموبايل */
+        @media (max-width: 500px) {
+            body { padding: 5px; }
+            .setup-container { padding: 12px; border-radius: 14px; max-width: 100%; }
+            .form-row, .form-row-equal { 
+                grid-template-columns: 1fr; /* تحويل الحقول تحت بعضها تماماً بدون تداخل */
+                gap: 8px; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="setup-container">
+        <!-- شريط علوي يحتوي على اسم الإصدار وزر خروج -->
+        <div class="top-bar">
+            <div class="brand-badge notranslate">Dev: Eslam Qandil v1.0</div>
+            <a href="/logout" class="btn-logout">🚪 تسجيل الخروج</a>
+        </div>
+
+        <div class="header-area">
+            <div class="logo-area">🛡️</div>
+            <h2 class="setup-title">إعداد الدورة المالية</h2>
+            <p class="setup-subtitle">أدخل بياناتك الأساسية واضبط مؤشر الأمان الصرفي</p>
+        </div>
+
+        <form action="/setup" method="POST">
+            
+            <div class="section-title">📌 الميزانية والوقت الأساسي</div>
+            
+            <!-- الراتب والعملة -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <div class="form-group" style="margin:0;">
+                    <label for="main_salary">الراتب / الميزانية المتاحة:</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">💰</span>
+                        <input type="number" id="main_salary" name="main_salary" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label for="currency">العملة:</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">💱</span>
+                        <select id="currency" name="currency">
+                            <option value="جنيه">ج.م</option>
+                            <option value="دولار">USD</option>
+                            <option value="ريال">SAR</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أيام التغطية وتاريخ البداية -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="form-group">
+                    <label for="days_count">أيام التغطية (العمل):</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📅</span>
+                        <input type="number" id="days_count" name="days_count" min="1" max="366" value="24" required>
+                        <span class="input-unit">يوم</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="start_date">تاريخ بدء الدورة:</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">📆</span>
+                        <input type="date" id="start_date" name="start_date" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">⚠️ مؤشر الأمان الصرفي</div>
+            
+            <!-- حد التنبيه للمصاريف -->
+            <div class="form-group">
+                <label for="alert_threshold">حد التنبيه للمصاريف التشغيلية (%):</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">🚨</span>
+                    <input type="number" id="alert_threshold" name="alert_threshold" min="50" max="100" value="80" required>
+                    <span class="input-unit">%</span>
+                </div>
+                <div class="tip-box">
+                    💡 <strong>كيف يعمل؟</strong> إذا تم تحديد 80%، فسيقوم التطبيق بإظهار تحذير مرئي في لوحة التحكم بمجرد أن تستهلك 80% من الميزانية التشغيلية اليومية المحددة لك، لتجنب العجز المالي المبكر.
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">حفظ وتوليد الميزانية الفورية 🚀</button>
+        </form>
+    </div>
+
+    <div class="watermark notranslate">
+        MASAR AL-MAL • ESLAM QANDIL
+    </div>
+
+    <script>
+        // تعيين تاريخ اليوم تلقائياً كتاريخ افتراضي لبدء الميزانية
+        document.getElementById('start_date').value = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>

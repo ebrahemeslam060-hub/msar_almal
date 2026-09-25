@@ -1,0 +1,877 @@
+"""
+====================================================================
+Project Name : مسار المال (Masar Al-Mal) - Smart Financial & 14-Day Meal Planner
+Developer    : إسلام إبراهيم (Eslam Ibrahim)
+Version      : v3.0.2 (Full Integrated & Admin Dashboard)
+Watermark    : Developed with precision & dedication by Eslam Ibrahim
+====================================================================
+"""
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم: ميزانيتك الذكية - مسار المال</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        :root {
+            --bg-light: #f8fafc;
+            --card-bg-light: #ffffff;
+            --text-main-light: #334155;
+            --bg-dark: #0b0f19;
+            --card-bg-dark: #131d31;
+            --text-main-dark: #f1f5f9;
+            --warning-border: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.08);
+            --primary-green: #2e7d32;
+            --primary-green-light: #e8f5e9;
+            
+            --pk-color: #86efac;       
+            --fk-color: #991b1b;       
+            --pk-color-dark: #bbf7d0;  
+            --fk-color-dark: #f87171;  
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main-light);
+            margin: 0;
+            padding: 10px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        .header-area {
+            background-color: var(--card-bg-light);
+            padding: 14px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0,0,0,0.04);
+            text-align: center;
+        }
+        .header-title { font-size: 0.95rem; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; color: #1e293b; }
+        .nav-links { display: flex; gap: 6px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+        .nav-btn {
+            background-color: #f1f5f9;
+            color: #334155;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            transition: all 0.2s;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .nav-btn:hover { background-color: #e2e8f0; }
+        .nav-btn.danger { background-color: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .nav-btn.danger:hover { background-color: #f87171; color: white; }
+
+        .stat-card {
+            background-color: var(--card-bg-light);
+            padding: 14px 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            margin-bottom: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card.warning-card {
+            border: 2px solid var(--warning-border) !important;
+            background-color: var(--warning-bg) !important;
+        }
+
+        .stat-card h3 { font-size: 0.8rem; margin: 0 0 6px 0; color: #64748b; display: flex; align-items: center; gap: 5px; }
+        .stat-card .amount { font-size: 1.2rem; font-weight: bold; color: #1e293b; }
+        .stat-card .note { font-size: 0.75rem; color: #64748b; margin-top: 5px; font-weight: normal; }
+        .stat-card .sub-detail { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+
+        .card {
+            background-color: var(--card-bg-light);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            margin-bottom: 12px;
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; color: #1e293b; }
+
+        .form-group { text-align: right; margin-bottom: 10px; }
+        label { display: block; margin-bottom: 4px; font-size: 11px; font-weight: bold; color: #64748b; }
+        input, select {
+            width: 100%; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px;
+            background-color: #fff; color: #334155; font-family: inherit; box-sizing: border-box;
+        }
+        input:focus, select:focus { outline: none; border-color: #3b82f6; }
+        
+        .btn-submit {
+            background-color: #3b82f6; color: white; border: none; padding: 11px; border-radius: 8px;
+            font-weight: bold; font-size: 12px; width: 100%; cursor: pointer; font-family: inherit;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: background 0.2s;
+        }
+        .btn-submit:hover { background-color: #2563eb; }
+
+        .category-add-container {
+            background: rgba(0,0,0,0.015);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.04);
+            margin-bottom: 12px;
+        }
+        .category-input-row { display: flex; gap: 8px; margin-top: 8px; }
+        .category-input-row input { flex: 1; }
+        
+        .category-list { display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; }
+        .category-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: rgba(0,0,0,0.015); padding: 8px 10px; border-radius: 8px; font-size: 12px;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        .btn-delete-cat {
+            background-color: #fee2e2; color: #991b1b; border: none; padding: 4px 8px;
+            border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; font-family: inherit;
+        }
+        .btn-delete-cat:hover { background-color: #ef4444; color: white; }
+
+        .table-container { overflow-x: auto; margin-bottom: 12px; }
+        table { width: 100%; border-collapse: collapse; text-align: right; }
+        th { background-color: #f8fafc; color: #475569; font-weight: bold; padding: 8px; border-bottom: 2px solid #e2e8f0; font-size: 11px; }
+        td { padding: 8px; border-bottom: 1px solid #f1f5f9; font-size: 11px; color: #334155; }
+        .no-data { text-align: center; color: #94a3b8; padding: 15px; font-style: italic; font-size: 11px; }
+
+        .clickable-meal {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-radius: 6px;
+            padding: 6px;
+        }
+        .clickable-meal:hover {
+            background-color: rgba(59, 130, 246, 0.08);
+        }
+
+        .btn-action-full {
+            width: 100%; padding: 11px; border-radius: 8px; font-weight: bold; font-size: 12px;
+            text-align: center; cursor: pointer; border: none; font-family: inherit; text-decoration: none;
+            display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 8px;
+        }
+
+        .prices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .price-item {
+            background: rgba(0,0,0,0.02);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 11px;
+            position: relative;
+        }
+        .price-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .price-item input {
+            width: 80px;
+            padding: 4px 6px;
+            font-size: 11px;
+        }
+        .meal-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .badge-breakfast { background: #fff3e0; color: #e65100; }
+        .badge-lunch { background: #e8f5e9; color: #2e7d32; }
+        .badge-dinner { background: #e1f5fe; color: #0277bd; }
+        
+        .decision-log {
+            background: #fffde7;
+            border-right: 4px solid #fbc02d;
+            padding: 10px;
+            margin-top: 12px;
+            font-size: 11px;
+            border-radius: 4px;
+            color: #744210;
+            line-height: 1.6;
+        }
+        .shopping-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+            margin-bottom: 12px;
+        }
+        .shopping-item-card {
+            background: rgba(46, 125, 50, 0.05);
+            border-right: 3px solid #2e7d32;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .shopping-item-card strong { color: #2e7d32; display: block; margin-bottom: 2px; }
+
+        .add-price-box {
+            background: rgba(0,0,0,0.02);
+            border: 1px dashed #cbd5e1;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .hidden { display: none !important; }
+
+        .watermark {
+            text-align: center; font-size: 9px; color: #64748b; letter-spacing: 1.5px; margin-top: 15px; text-transform: uppercase;
+        }
+        .notranslate { translate: no !important; }
+
+        .key-pk {
+            color: var(--pk-color);
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 4px;
+            background: rgba(134, 239, 172, 0.15);
+        }
+        .key-fk {
+            color: var(--fk-color);
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 4px;
+            background: rgba(153, 27, 27, 0.12);
+        }
+
+        body.dark-mode {
+            background-color: var(--bg-dark);
+            color: var(--text-main-dark);
+        }
+        body.dark-mode .header-area, body.dark-mode .stat-card, body.dark-mode .card {
+            background-color: var(--card-bg-dark);
+            color: var(--text-main-dark);
+            border-color: rgba(255,255,255,0.04);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .card-title, body.dark-mode .header-title, body.dark-mode .stat-card .amount { color: #f1f5f9; }
+        body.dark-mode .stat-card .note { color: #cbd5e1; }
+        body.dark-mode label { color: #94a3b8; }
+        body.dark-mode input, body.dark-mode select {
+            background-color: #1a263d; border-color: #334155; color: #f1f5f9;
+        }
+        body.dark-mode .nav-btn {
+            background-color: #1a263d; color: #cbd5e1; border-color: #334155;
+        }
+        body.dark-mode .nav-btn:hover { background-color: #27354f; }
+        body.dark-mode .nav-btn.danger { background-color: #7f1d1d; color: #fca5a5; border-color: #991b1b; }
+        body.dark-mode .category-add-container, body.dark-mode .add-price-box { background-color: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.05); }
+        body.dark-mode .category-item, body.dark-mode .price-item { background-color: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+        body.dark-mode th { background-color: #1a263d; color: #cbd5e1; border-bottom-color: #334155; }
+        body.dark-mode td { color: #cbd5e1; border-bottom-color: #1a263d; }
+        body.dark-mode .decision-log { background: #332a00; color: #fef08a; border-right-color: #eab308; }
+        body.dark-mode .shopping-item-card { background: rgba(34, 197, 94, 0.08); border-right-color: #4ade80; }
+        body.dark-mode .shopping-item-card strong { color: #4ade80; }
+        body.dark-mode .badge-breakfast { background: #4a2800; color: #ffb74d; }
+        body.dark-mode .badge-lunch { background: #1b4720; color: #81c784; }
+        body.dark-mode .badge-dinner { background: #0d3c61; color: #4fc3f7; }
+        body.dark-mode .clickable-meal:hover { background-color: rgba(56, 189, 248, 0.15); }
+        body.dark-mode .key-pk { color: var(--pk-color-dark); background: rgba(187, 247, 208, 0.15); }
+        body.dark-mode .key-fk { color: var(--fk-color-dark); background: rgba(248, 113, 113, 0.18); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-area">
+        <div class="header-title notranslate">
+            <span>📊</span> لوحة التحكم: ميزانيتك الذكية <span style="font-size: 10px; opacity: 0.7;">v3.0.2</span>
+        </div>
+        <div class="nav-links">
+            <button onclick="toggleDarkMode()" class="nav-btn">🌓 الوضع الليلي</button>
+            <a href="/history" class="nav-btn">📋 السجلات</a>
+            <a href="/setup" class="nav-btn" style="background-color: #fef08a; color: #854d0e; border-color: #fde047;">💡 ميزانية جديدة</a>
+        </div>
+        <button onclick="logout()" class="nav-btn danger" style="width: 100%;">🚪 خروج</button>
+    </div>
+
+    <!-- كارت الأساسيات (50%) -->
+    <div class="stat-card {% if rem_fixed < 0 %}warning-card{% endif %}">
+        <h3>📉 الأساسيات (50%)</h3>
+        <div class="amount notranslate">{{ total_fixed_expenses|default(0.0) }} جنيه</div>
+        <div class="note">المتبقي: <span class="notranslate">{{ rem_fixed|default(0.0) }}</span> جنيه من أصل <span class="notranslate">{{ budget_fixed|default(0.0) }}</span> جنيه</div>
+        <div class="sub-detail">اليومي الحالي المتاح للأكل: <span class="notranslate">{{ daily_current|round(1)|default(0.0) }}</span> جنيه/يوم</div>
+    </div>
+    
+    <!-- كارت الاستثمار (20%) -->
+    <div class="stat-card {% if rem_investment < 0 %}warning-card{% endif %}">
+        <h3>📈 الاستثمار (20%)</h3>
+        <div class="amount notranslate">{{ total_investment_expenses|default(0.0) }} جنيه</div>
+        <div class="note">المتبقي: <span class="notranslate">{{ rem_investment|default(0.0) }}</span> جنيه من أصل <span class="notranslate">{{ budget_investment|default(0.0) }}</span> جنيه</div>
+    </div>
+    
+    <!-- كارت بناء الأصول والمشاريع (10%) -->
+    <div class="stat-card {% if rem_assets < 0 %}warning-card{% endif %}">
+        <h3>🏗️ بناء الأصول والمشاريع (10%)</h3>
+        <div class="amount notranslate">{{ total_assets_expenses|default(0.0) }} جنيه</div>
+        <div class="note">المتبقي: <span class="notranslate">{{ rem_assets|default(0.0) }}</span> جنيه من أصل <span class="notranslate">{{ budget_assets|default(0.0) }}</span> جنيه</div>
+    </div>
+    
+    <!-- كارت تطوير المهارات (10%) -->
+    <div class="stat-card {% if rem_skills < 0 %}warning-card{% endif %}">
+        <h3>📚 تطوير المهارات (10%)</h3>
+        <div class="amount notranslate">{{ total_skills_expenses|default(0.0) }} جنيه</div>
+        <div class="note">المتبقي: <span class="notranslate">{{ rem_skills|default(0.0) }}</span> جنيه من أصل <span class="notranslate">{{ budget_skills|default(0.0) }}</span> جنيه</div>
+    </div>
+
+    <!-- كارت الترفيه والكماليات (5%) -->
+    <div class="stat-card {% if rem_entertainment < 0 %}warning-card{% endif %}">
+        <h3>🎮 الترفيه والكماليات (5%)</h3>
+        <div class="amount notranslate">{{ total_entertainment_expenses|default(0.0) }} جنيه</div>
+        <div class="note">المتبقي: <span class="notranslate">{{ rem_entertainment|default(0.0) }}</span> جنيه من أصل <span class="notranslate">{{ budget_entertainment|default(0.0) }}</span> جنيه</div>
+    </div>
+
+    <!-- كارت صندوق الطوارئ (5%) -->
+    <div class="stat-card">
+        <h3>🚨 صندوق الطوارئ (5%)</h3>
+        <div class="amount notranslate">{{ total_emergency_expenses|default(0.0) }} جنيه المستهلك</div>
+        <div class="note">المتبقي: <span class="notranslate">{{ rem_emergency|default(budget_emergency) }}</span> جنيه من أصل <span class="notranslate">{{ budget_emergency|default(0.0) }}</span> جنيه</div>
+    </div>
+
+    <!-- مخطط الوجبات الأساسية -->
+    <div class="card" id="mealPlannerCard">
+        <div class="card-title">🧠 مخطط الوجبات الأساسية (المصفوفة الديناميكية المفتوحة)</div>
+        
+        <div id="step1_food">
+            <div style="font-size: 11px; font-weight: bold; margin-bottom: 6px; color: #64748b;">1️⃣ أدخل ميزانية الأكل وعدد الأيام المستهدفة:</div>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                <input type="number" id="biweeklyBudget" placeholder="الميزانية (مثال: 350)" min="1" class="notranslate" style="flex: 1;" />
+                <select id="mealDaysCount" class="notranslate" style="width: 120px;">
+                    <option value="7">7 أيام (أسبوع)</option>
+                    <option value="14" selected>14 يوم (أسبوعين)</option>
+                    <option value="30">30 يوم (شهر)</option>
+                </select>
+            </div>
+            <button onclick="submitBudget()" class="nav-btn" style="background-color: #2e7d32; color: white; border: none; padding: 9px 16px; width: 100%;">حفظ الميزانية وتحديث الأسعار ⚡</button>
+        </div>
+
+        <div id="step2_food" class="hidden" style="margin-top: 15px;">
+            <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 12px 0;">
+            <div style="font-size: 11px; font-weight: bold; color: #2e7d32; margin-top: 12px; margin-bottom: 4px;">2️⃣ أسعار السلع الشاملة (للفترة المحددة):</div>
+            
+            <div class="add-price-box">
+                <select id="newPriceItemCategory" style="flex: 1.2;">
+                    <option value="البروتين">البروتين</option>
+                    <option value="خضراوات">خضراوات</option>
+                    <option value="العطارة والحبوب والمخبوزات">العطارة والحبوب والمخبوزات</option>
+                    <option value="الدهون والزيوت">الدهون والزيوت</option>
+                    <option value="الألبان">الألبان</option>
+                </select>
+                <input type="text" id="newPriceItemName" placeholder="اسم السلعة الجديدة..." style="flex: 2;" />
+                <input type="number" id="newPriceItemCost" placeholder="السعر" step="0.5" min="0" class="notranslate" style="flex: 1;" />
+                <button onclick="addCustomPriceItem()" class="nav-btn" style="background-color: #10b981; color: white; border: none; padding: 8px 12px; font-size: 11px;">➕ إضافة سلعة</button>
+            </div>
+
+            <div class="prices-grid" id="pricesContainer"></div>
+            <button onclick="generateSmartBiweeklyPlan()" class="nav-btn" style="background-color: #0288d1; color: white; width: 100%; margin-top: 12px; padding: 10px; border: none; font-size: 12px;">توليد قائمة المشتريات</button>
+        </div>
+
+        <div id="step3_food" class="hidden" style="margin-top: 15px;">
+            <hr style="border: 0; border-top: 1px dashed #cbd5e1; margin: 12px 0;">
+            <div style="font-size: 11px; font-weight: bold; color: #2e7d32;" id="planHeaderTitle">3️⃣ خطة الوجبات الأساسية:</div>
+            <div id="decisionLog" class="decision-log"></div>
+
+            <div style="font-size: 11px; font-weight: bold; margin-top: 20px; color: #2e7d32;">
+                <span>🛒 قائمة المشتريات (مقسمة ومحدثة تلقائياً):</span>
+            </div>
+
+            <div class="shopping-grid" id="biweeklyShoppingGrid"></div>
+
+            <button onclick="buyAllProducts()" class="nav-btn" style="background-color: #10b981; color: white; width: 100%; margin-bottom: 15px; padding: 11px; border: none; font-size: 12px; font-weight: bold;">
+                🛒 شراء كل المنتجات دفعة واحدة (<span id="totalShoppingCostSpan" class="notranslate">0</span> جنيه)
+            </button>
+
+            <div class="table-container">
+                <table>
+                    <tbody id="biweeklyTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- تسجيل حركة جديدة -->
+    <div class="card">
+        <div class="card-title">📝 تسجيل حركة جديدة</div>
+        <form action="/add_expense" method="POST">
+            <div class="form-group">
+                <label for="action_type">نوع الحركة:</label>
+                <select id="action_type" name="action_type" required>
+                    <option value="مصروف">🛒 مصروفات (خارجة من الميزانية)</option>
+                    <option value="دخل إضافي">💵 دخل إضافي (داخل للميزانية)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="category">القسم / التصنيف الفرعي:</label>
+                <select id="category" name="category" required>
+                    {% if categories %}
+                        {% for cat in categories %}
+                            <option value="{{ cat.name }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    {% else %}
+                        <option value="طعام">طعام</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="amount">المبلغ (جنيه):</label>
+                <input type="number" id="amount" name="amount" step="0.01" placeholder="0.00" required class="notranslate" />
+            </div>
+            <div class="form-group">
+                <label for="transaction_date">تاريخ ووقت الحركة (اختياري):</label>
+                <input type="datetime-local" id="transaction_date" name="transaction_date" class="notranslate" />
+            </div>
+            <button type="submit" class="btn-submit">⚡ تسجيل الدفع الفوري</button>
+        </form>
+    </div>
+
+    <!-- التحكم في الأقسام والتصنيفات -->
+    <div class="card">
+        <div class="card-title">🛠️ التحكم وإدارة الأقسام والتصنيفات الفرعية</div>
+        <form action="/add_category" method="POST">
+            <div class="category-add-container">
+                <div class="form-group" style="margin-bottom: 8px;">
+                    <label for="category_type_select">1️⃣ اختر مكان الخصم <span class="key-pk">PK</span>:</label>
+                    <select id="category_type_select" name="category_type" required>
+                        <option value="" disabled selected>-- اختر مكان الخصم --</option>
+                        <option value="fixed">الأساسيات (50%)</option>
+                        <option value="investment">الاستثمار (20%)</option>
+                        <option value="assets">بناء الأصول والمشاريع (10%)</option>
+                        <option value="skills">تطوير المهارات (10%)</option>
+                        <option value="entertainment">الترفيه والكماليات (5%)</option>
+                        <option value="emergency">صندوق الطوارئ (5%)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="category_name_input">2️⃣ اسم التصنيف الفرعي الجديد <span class="key-fk">FK</span>:</label>
+                    <div class="category-input-row">
+                        <input type="text" id="category_name_input" name="category_name" placeholder="اكتب الاسم هنا..." required autocomplete="off" />
+                        <button type="submit" class="nav-btn" style="background-color: #28a745; color: white; border: none; padding: 9px 18px; font-size: 12px; font-weight: bold; border-radius: 8px;">
+                            ➕ إضافة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="category-list">
+            {% if categories %}
+                {% for cat in categories %}
+                <div class="category-item">
+                    <span class="notranslate"><strong class="key-fk">{{ cat.name }}</strong> - <span class="key-pk">
+                        {% if cat.type == 'fixed' %}الأساسيات{% elif cat.type == 'investment' %}الاستثمار{% elif cat.type == 'assets' %}الأصول{% elif cat.type == 'skills' %}المهارات{% elif cat.type == 'entertainment' %}الترفيه{% else %}الطوارئ{% endif %}
+                    </span></span>
+                    <form action="/delete_category/{{ cat.id }}" method="POST" style="display: inline;" onsubmit="return confirm('هل أنت متأكد من حذف هذا التصنيف؟');">
+                        <button type="submit" class="btn-delete-cat">❌ حذف</button>
+                    </form>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- دفتر القيود اليومي -->
+    <div class="card">
+        <div class="card-title">📖 دفتر القيود اليومي (الشهر الحالي)</div>
+        <div class="form-group">
+            <input type="text" id="txSearchInput" onkeyup="filterTransactions()" placeholder="🔍 ابحث بالقسم أو المبلغ أو التاريخ..." style="margin-bottom: 10px; padding: 7px 10px; font-size: 11px;">
+        </div>
+
+        <div class="table-container">
+            <table id="transactionsTable">
+                <thead>
+                    <tr>
+                        <th>التاريخ والوقت</th>
+                        <th>النوع</th>
+                        <th>القسم <span class="key-pk">PK</span></th>
+                        <th>المبلغ</th>
+                        <th>إجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if transactions %}
+                        {% for tx in transactions %}
+                        <tr>
+                            <td class="notranslate">{{ tx.time }}</td>
+                            <td class="notranslate"><span class="key-fk">{{ tx.category }}</span></td>
+                            <td style="font-weight: bold;" class="notranslate">{{ tx.amount }} جنيه</td>
+                            <td>
+                                <form action="/delete_transaction/{{ tx.id }}" method="POST" onsubmit="return confirm('هل تريد حذف هذه الحركة؟');">
+                                    <button type="submit" class="btn-delete-cat">حذف</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="no-data">📌 السجل فارغ تماماً!</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        
+        <button onclick="saveDailyReport()" class="btn-action-full" style="background-color: #10b981; color: white;">📥 قفل اليوم وتحميل التقرير (Excel/CSV)</button>
+        <button onclick="resetAllData()" class="btn-action-full" style="background-color: #ef4444; color: white;">⚠️ إعادة ضبط شامل للبيانات</button>
+    </div>
+</div>
+
+<div class="watermark notranslate">
+    MASAR AL-MAL v3.0.2 • ESLAM QANDIL
+</div>
+
+<script>
+let defaultFoodCatalog = {
+  "البروتين": {
+    items: {
+      "فراخ": { defaultPrice: 220 },
+      "كبدة وأوانص": { defaultPrice: 110 },
+      "البيض المفرد": { defaultPrice: 5.5, isEgg: true },
+      "كرتونة بيض (30 بيضة)": { defaultPrice: 150, isCarton: true },
+      "سمك بولطي": { defaultPrice: 90 },
+      "لحمة حمراء (مكعبات/قطع)": { defaultPrice: 380 },
+      "لحمة مفرومة (متوسطة)": { defaultPrice: 340 },
+      "تونة معلبة بالزيت": { defaultPrice: 45, isCannedTuna: true }
+    }
+  },
+  "خضراوات": {
+    items: {
+      "طماطم": { defaultPrice: 15 },
+      "خيار": { defaultPrice: 15 },
+      "بصل": { defaultPrice: 20 },
+      "بطاطس": { defaultPrice: 25 },
+      "خس وفلفل": { defaultPrice: 15 }
+    }
+  },
+  "العطارة والحبوب والمخبوزات": {
+    items: {
+      "أرز أبيض": { defaultPrice: 32 },
+      "مكرونة": { defaultPrice: 28 },
+      "شوفان": { defaultPrice: 40 },
+      "فريك": { defaultPrice: 35 },
+      "قمح": { defaultPrice: 25 },
+      "خبز بلدي (رغيف)": { defaultPrice: 1.5, isBread: true },
+      "توابل وعطارة مشكلة": { defaultPrice: 120 },
+      "فول مدمس / جاف": { defaultPrice: 50 }
+    }
+  },
+  "الدهون والزيوت": {
+    items: {
+      "سمنة نباتي": { defaultPrice: 65 },
+      "زيت زيتون": { defaultPrice: 180 },
+      "زيت نباتي": { defaultPrice: 75 }
+    }
+  },
+  "الألبان": {
+    items: {
+      "حليب": { defaultPrice: 38 },
+      "جبنة قريش": { defaultPrice: 85 },
+      "جبنة ثلاجة": { defaultPrice: 120 }
+    }
+  }
+};
+
+let biweeklyBudget = 0;
+let selectedDaysCount = 14;
+let currentShoppingItems = [];
+let generatedPlanData = [];
+
+function getFoodCatalog() {
+    let saved = localStorage.getItem('customFoodCatalog');
+    if (saved) {
+        try { return JSON.parse(saved); } catch(e) {}
+    }
+    return defaultFoodCatalog;
+}
+
+function saveFoodCatalog(cat) {
+    localStorage.setItem('customFoodCatalog', JSON.stringify(cat));
+}
+
+function submitBudget() {
+  const input = document.getElementById('biweeklyBudget');
+  const daysSelect = document.getElementById('mealDaysCount');
+  biweeklyBudget = parseFloat(input.value);
+  selectedDaysCount = parseInt(daysSelect.value);
+
+  if (!biweeklyBudget || biweeklyBudget <= 0) {
+    alert("برجاء إدخال ميزانية الأكل بشكل صحيح!");
+    return;
+  }
+
+  localStorage.setItem('biweeklyBudget', biweeklyBudget);
+  localStorage.setItem('mealDaysCount', selectedDaysCount);
+  renderPricesContainer();
+
+  document.getElementById('step2_food').classList.remove('hidden');
+  document.getElementById('step3_food').classList.add('hidden');
+}
+
+function renderPricesContainer() {
+  const container = document.getElementById('pricesContainer');
+  container.innerHTML = '';
+  let catalog = getFoodCatalog();
+  const savedPrices = JSON.parse(localStorage.getItem('foodPrices') || '{}');
+
+  for (const [catName, catData] of Object.entries(catalog)) {
+    for (const [itemName, itemData] of Object.entries(catData.items)) {
+      const itemId = `price_${itemName.replace(/[\s\(\)\/]+/g, '_')}`;
+      let unitText = "ج.م";
+      if (itemData.isEgg) unitText = "ج.م / بيضة";
+      else if (itemData.isCarton) unitText = "ج.م / كرتونة";
+      else if (itemData.isBread) unitText = "ج.م / رغيف";
+      else if (itemData.isCannedTuna) unitText = "ج.م / علبة";
+
+      const currentVal = savedPrices[itemName] !== undefined ? savedPrices[itemName] : itemData.defaultPrice;
+
+      container.innerHTML += `
+        <div class="price-item">
+          <div class="price-item-row">
+            <strong class="key-fk">${itemName}</strong>
+            <button onclick="removePriceItem('${catName}', '${itemName}')" class="btn-delete-cat">❌ حذف</button>
+          </div>
+          <div class="price-item-row notranslate">
+            <span class="key-pk">${catName}</span>
+            <div>
+              <input type="number" id="${itemId}" value="${currentVal}" step="0.5" min="0.1" onchange="savePrice('${itemName}', this.value)"> <span>${unitText}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  }
+}
+
+function savePrice(itemName, val) {
+  const savedPrices = JSON.parse(localStorage.getItem('foodPrices') || '{}');
+  savedPrices[itemName] = parseFloat(val);
+  localStorage.setItem('foodPrices', JSON.stringify(savedPrices));
+}
+
+function addCustomPriceItem() {
+  const categorySelect = document.getElementById('newPriceItemCategory');
+  const nameInput = document.getElementById('newPriceItemName');
+  const costInput = document.getElementById('newPriceItemCost');
+  
+  const category = categorySelect.value;
+  const name = nameInput.value.trim();
+  const cost = parseFloat(costInput.value);
+
+  if (!name || isNaN(cost) || cost < 0) {
+    alert("برجاء إدخال اسم السلعة وسعرها بشكل صحيح!");
+    return;
+  }
+
+  let catalog = getFoodCatalog();
+  if (!catalog[category]) catalog[category] = { items: {} };
+  catalog[category].items[name] = { defaultPrice: cost };
+
+  saveFoodCatalog(catalog);
+  savePrice(name, cost);
+  nameInput.value = '';
+  costInput.value = '';
+  renderPricesContainer();
+}
+
+function removePriceItem(catName, itemName) {
+  if (confirm(`هل أنت متأكد من حذف السلعة (${itemName})؟`)) {
+    let catalog = getFoodCatalog();
+    if (catalog[catName] && catalog[catName].items[itemName]) {
+      delete catalog[catName].items[itemName];
+      saveFoodCatalog(catalog);
+      renderPricesContainer();
+    }
+  }
+}
+
+function generateSmartBiweeklyPlan() {
+  let catalog = getFoodCatalog();
+  let savedPrices = JSON.parse(localStorage.getItem('foodPrices') || '{}');
+  let scaleFactor = selectedDaysCount / 14;
+
+  function getItemPrice(itemName, defaultVal) {
+    const inputEl = document.getElementById(`price_${itemName.replace(/[\s\(\)\/]+/g, '_')}`);
+    if (inputEl && !isNaN(parseFloat(inputEl.value))) return parseFloat(inputEl.value);
+    if (savedPrices[itemName] !== undefined) return savedPrices[itemName];
+    return defaultVal;
+  }
+
+  currentShoppingItems = [];
+  let totalCalculatedCost = 0;
+
+  for (const [catName, catData] of Object.entries(catalog)) {
+    for (const [itemName, itemData] of Object.entries(catData.items)) {
+      let unitPrice = getItemPrice(itemName, itemData.defaultPrice);
+      let calculatedQty = 1;
+      let displayQtyText = "";
+
+      if (itemData.isEgg) {
+        calculatedQty = Math.min(selectedDaysCount * 2, Math.max(selectedDaysCount, Math.floor((biweeklyBudget * 0.15) / unitPrice)));
+        displayQtyText = `${calculatedQty} بيضة`;
+      } else if (itemData.isCarton) {
+        calculatedQty = Math.max(1, Math.round(1 * scaleFactor));
+        displayQtyText = `${calculatedQty} كرتونة`;
+      } else if (itemData.isBread) {
+        calculatedQty = Math.round(28 * scaleFactor);
+        displayQtyText = `${calculatedQty} رغيف`;
+      } else if (catName === "البروتين") {
+        calculatedQty = parseFloat((0.75 * scaleFactor).toFixed(2));
+        displayQtyText = `${calculatedQty} كجم`;
+      } else {
+        calculatedQty = parseFloat((1.0 * scaleFactor).toFixed(2));
+        displayQtyText = `${calculatedQty} وحدة`;
+      }
+
+      let itemTotalCost = calculatedQty * unitPrice;
+      totalCalculatedCost += itemTotalCost;
+
+      currentShoppingItems.push({
+        name: itemName,
+        category: catName,
+        qtyText: displayQtyText,
+        cost: itemTotalCost
+      });
+    }
+  }
+
+  renderShoppingGrid();
+  document.getElementById('decisionLog').innerHTML = `📌 <strong>تم تحديث الجدول والمشتريات بنجاح</strong> لمدة ${selectedDaysCount} يوم.`;
+  document.getElementById('step3_food').classList.remove('hidden');
+  document.getElementById('step3_food').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderShoppingGrid() {
+  const shoppingGrid = document.getElementById('biweeklyShoppingGrid');
+  shoppingGrid.innerHTML = '';
+  let totalCost = 0;
+
+  currentShoppingItems.forEach((item) => {
+    totalCost += item.cost;
+    shoppingGrid.innerHTML += `
+      <div class="shopping-item-card">
+        <div>
+          <span class="key-pk">${item.category}</span>
+          <strong>📦 <span class="key-fk">${item.name}</span></strong>
+          <div style="font-size: 10px; color: #475569; margin-top: 2px;">الكمية: <span class="notranslate">${item.qtyText}</span></div>
+        </div>
+        <div style="font-size: 11px; margin-top: 6px; font-weight: bold;" class="notranslate">التكلفة: ${item.cost.toFixed(1)} جنيه</div>
+      </div>
+    `;
+  });
+
+  document.getElementById('totalShoppingCostSpan').textContent = totalCost.toFixed(1);
+}
+
+async function buyAllProducts() {
+  let totalShoppingCost = currentShoppingItems.reduce((sum, item) => sum + item.cost, 0);
+  if (totalShoppingCost <= 0) {
+    alert("قائمة المشتريات فارغة!");
+    return;
+  }
+
+  if (!confirm(`هل أنت متأكد من شراء كافة منتجات القائمة بقيمة (${totalShoppingCost.toFixed(1)} جنيه)؟`)) return;
+
+  try {
+    let formData = new URLSearchParams();
+    formData.append('action_type', 'مصروف');
+    formData.append('category', 'طعام');
+    formData.append('amount', totalShoppingCost.toFixed(2));
+
+    let response = await fetch('/add_expense', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString()
+    });
+
+    if (response.ok) {
+      alert("تم تسجيل شراء جميع المنتجات بنجاح!");
+      window.location.reload();
+    }
+  } catch(e) {
+    alert("تعذر الاتصال بالخادم.");
+  }
+}
+
+function filterTransactions() {
+    let input = document.getElementById("txSearchInput");
+    let filter = input.value.toLowerCase();
+    let table = document.getElementById("transactionsTable");
+    let tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+        let textContent = tr[i].textContent || tr[i].innerText;
+        tr[i].style.display = (textContent.toLowerCase().indexOf(filter) > -1) ? "" : "none";
+    }
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+}
+
+async function saveDailyReport() {
+    let response = await fetch('/save_daily_report', { method: 'POST' });
+    if (response.ok) {
+        let blob = await response.blob();
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = `Masar_Al_Mal_Report_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    }
+}
+
+async function resetAllData() {
+    if (confirm("هل أنت متأكد من تصفير وإعادة ضبط كافة البيانات؟")) {
+        let response = await fetch('/reset_all', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        let result = await response.json();
+        if (result.status === 'success') window.location.href = result.redirect;
+    }
+}
+
+function logout() { window.location.href = '/logout'; }
+
+document.addEventListener("DOMContentLoaded", function() {
+    if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+});
+</script>
+
+</body>
+</html>

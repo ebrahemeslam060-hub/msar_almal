@@ -1,0 +1,353 @@
+<!--
+====================================================================
+  Masar Al-Mal (مسار المال) - Admin Dashboard & User Management
+  Copyright (c) 2026 Eslam Qandil. All Rights Reserved.
+  Developer: Eslam Qandil
+====================================================================
+-->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المسؤول - مسار المال</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1e3d59;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header a {
+            color: #f1f5f9;
+            text-decoration: none;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .header a:hover { background: rgba(255,255,255,0.25); }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .grid-container { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #1e3d59;
+            font-size: 16px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-size: 13.5px; color: #475569; }
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus { border-color: #1e3d59; outline: none; }
+
+        button {
+            width: 100%;
+            padding: 11px;
+            background: #1e3d59;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        button:hover { background: #173047; }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13.5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .alert-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th { background: #f8fafc; color: #475569; font-weight: 600; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-admin { background: #dbeafe; color: #1e40af; }
+        .badge-user { background: #f1f5f9; color: #475569; }
+        .badge-guest { background: #fef3c7; color: #92400e; }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            width: auto;
+        }
+        .btn-delete:hover { background: #dc2626; }
+
+        body.dark-mode {
+            background: #0f172a;
+            color: #f1f5f9;
+        }
+        body.dark-mode .card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        body.dark-mode .card h2 { color: #f1f5f9; border-bottom-color: #334155; }
+        body.dark-mode label { color: #cbd5e1; }
+        body.dark-mode input, body.dark-mode select {
+            background: #0f172a;
+            border-color: #475569;
+            color: white;
+        }
+        body.dark-mode th { background: #0f172a; color: #cbd5e1; }
+        body.dark-mode td { border-bottom-color: #334155; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1><i class="fa-solid fa-user-shield"></i> لوحة تحكم الأدمن - مسار المال</h1>
+    <div>
+        <a href="/tracker"><i class="fa-solid fa-gauge"></i> العودة للوحة المالية</a>
+        <a href="/logout" style="background: #ef4444; margin-right: 8px;"><i class="fa-solid fa-right-from-bracket"></i> خروج</a>
+    </div>
+</div>
+
+<div class="grid-container">
+    <!-- النموذج الديناميكي لإعادة تعيين كلمة المرور -->
+    <div class="card">
+        <h2><i class="fa-solid fa-key"></i> إعادة تعيين كلمة المرور</h2>
+        <div id="resetAlert" class="alert"></div>
+        <form id="resetPasswordForm" onsubmit="handleResetPassword(event)">
+            <div class="input-group">
+                <label for="selectUser">اختر المستخدم</label>
+                <select id="selectUser" required>
+                    <option value="">جاري تحميل المستخدمين...</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="newPassword">كلمة المرور الجديدة</label>
+                <input type="password" id="newPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" id="btnReset">
+                <i class="fa-solid fa-rotate"></i> تحديث كلمة المرور
+            </button>
+        </form>
+    </div>
+
+    <!-- جدول إدارة المستخدمين Dynamic Users List -->
+    <div class="card">
+        <h2><i class="fa-solid fa-users"></i> قائمة المستخدمين المسجلين</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>المعرف (ID)</th>
+                        <th>اسم المستخدم</th>
+                        <th>الصلاحية</th>
+                        <th>رقم الهاتف</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #94a3b8;">جاري تحميل البيانات...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+        loadUsers();
+    });
+
+    async function loadUsers() {
+        try {
+            let response = await fetch('/admin/users');
+            let result = await response.json();
+
+            if (result.status === 'success') {
+                populateSelect(result.users);
+                populateTable(result.users);
+            }
+        } catch (e) {
+            console.error("خطأ أثناء تحميل بيانات المستخدمين:", e);
+        }
+    }
+
+    function populateSelect(users) {
+        const select = document.getElementById('selectUser');
+        select.innerHTML = '<option value="">-- اختر مستخدماً --</option>';
+        users.forEach(u => {
+            select.innerHTML += `<option value="${u.username}">${u.username} (${u.role})</option>`;
+        });
+    }
+
+    function populateTable(users) {
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '';
+
+        if (users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا يوجد مستخدمون مسجلون.</td></tr>';
+            return;
+        }
+
+        users.forEach(u => {
+            let roleBadge = u.role === 'admin' 
+                ? '<span class="badge badge-admin">مدير</span>' 
+                : (u.role === 'guest' ? '<span class="badge badge-guest">زائر</span>' : '<span class="badge badge-user">مستخدم</span>');
+
+            let deleteBtn = u.role !== 'admin' 
+                ? `<button class="btn-delete" onclick="deleteUser(${u.id}, '${u.username}')"><i class="fa-solid fa-trash"></i></button>` 
+                : '-';
+
+            tbody.innerHTML += `
+                <tr>
+                    <td>#${u.id}</td>
+                    <td><strong>${u.username}</strong></td>
+                    <td>${roleBadge}</td>
+                    <td>${u.phone || 'غير مدخل'}</td>
+                    <td>${deleteBtn}</td>
+                </tr>
+            `;
+        });
+    }
+
+    async function handleResetPassword(e) {
+        e.preventDefault();
+        const username = document.getElementById('selectUser').value;
+        const new_password = document.getElementById('newPassword').value;
+        const alertBox = document.getElementById('resetAlert');
+        const btn = document.getElementById('btnReset');
+
+        if (!username || !new_password) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحديث...';
+
+        try {
+            let response = await fetch('/admin/reset_password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: username, new_password: new_password})
+            });
+            let result = await response.json();
+
+            alertBox.style.display = 'block';
+            if (result.status === 'success') {
+                alertBox.className = 'alert alert-success';
+                alertBox.innerText = result.message;
+                document.getElementById('newPassword').value = '';
+            } else {
+                alertBox.className = 'alert alert-error';
+                alertBox.innerText = result.message;
+            }
+        } catch (e) {
+            alertBox.style.display = 'block';
+            alertBox.className = 'alert alert-error';
+            alertBox.innerText = 'حدث خطأ أثناء تغيير كلمة المرور.';
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-rotate"></i> تحديث كلمة المرور';
+        }
+    }
+
+    async function deleteUser(id, username) {
+        if (!confirm(`هل أنت تأكد من رغبتك في حذف المستخدم [${username}] وكافة بياناته نهائياً؟`)) return;
+
+        try {
+            let response = await fetch(`/admin/delete_user/${id}`, { method: 'DELETE' });
+            let result = await response.json();
+
+            if (result.status === 'success') {
+                alert(result.message);
+                loadUsers();
+            } else {
+                alert(result.message);
+            }
+        } catch (e) {
+            alert('حدث خطأ أثناء الاتصال بالخادم لحذف المستخدم.');
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,808 @@
+<!--
+====================================================================
+  Masar Al-Mal (مسار المال) - Smart Financial Dashboard
+  Copyright (c) 2026 Eslam Qandil. All Rights Reserved.
+  Developer & Designer: Eslam Qandil
+====================================================================
+-->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول الموحد - مسار المال</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3d59 0%, #0f172a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #f1f5f9;
+        }
+        .login-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        h2 { color: #1e3d59; margin-bottom: 5px; transition: color 0.3s; }
+        .input-group { margin-bottom: 15px; text-align: right; position: relative; }
+        label { display: block; margin-bottom: 5px; color: #555; font-size: 14px; transition: color 0.3s; }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+            text-align: right;
+            background-color: #ffffff;
+            color: #334155;
+            transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+        }
+        input:focus { border-color: #1e3d59; outline: none; }
+        
+        .toggle-password {
+            position: absolute;
+            left: 12px;
+            cursor: pointer;
+            color: #64748b;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .forgot-link {
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .forgot-link:hover { text-decoration: underline; }
+
+        button, .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            background-color: #1e3d59;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-weight: bold;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            box-sizing: border-box;
+            text-decoration: none;
+        }
+        button:hover { background-color: #173047; }
+        button:disabled { background-color: #94a3b8; cursor: not-allowed; }
+
+        .btn-google {
+            background-color: #ffffff;
+            color: #333333;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+        .btn-google:hover { background-color: #f8fafc; }
+
+        .btn-demo {
+            background-color: #059669;
+            color: white;
+            margin-top: 10px;
+        }
+        .btn-demo:hover { background-color: #047857; }
+
+        .btn-qr {
+            background-color: #475569;
+            color: white;
+            margin-top: 10px;
+        }
+        .btn-qr:hover { background-color: #334155; }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #94a3b8;
+            margin: 18px 0 10px 0;
+            font-size: 12px;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .divider span { padding: 0 10px; }
+
+        .links-container {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            transition: border-color 0.3s;
+        }
+        .toggle-link {
+            display: block;
+            margin-top: 8px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .toggle-link:hover { text-decoration: underline; }
+        .register-btn-link {
+            display: block;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #10b981;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .register-btn-link:hover {
+            background-color: #059669;
+            text-decoration: none;
+        }
+        .error-msg { color: #dc2626; margin-bottom: 15px; font-size: 14px; display: none; background: #fef2f2; border: 1px solid #fecaca; padding: 10px; border-radius: 6px; text-align: right; }
+        .info-msg { color: #2563eb; margin-bottom: 15px; font-size: 14px; background: #eff6ff; border: 1px solid #bfdbfe; padding: 10px; border-radius: 6px; text-align: right; }
+        .hidden { display: none !important; }
+        .secret-box { background: #f8f9fa; padding: 10px; border-radius: 6px; margin-top: 15px; border: 1px dashed #ccc; font-size: 12px; color: #333; }
+        
+        .notranslate { translate: no !important; }
+
+        .watermark {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #94a3b8;
+            letter-spacing: 1px;
+        }
+
+        /* --- تصميم النافذة المنبثقة (Modal) لبيانات التواصل والـ QR Code --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 380px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            text-align: right;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e3d59;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0;
+            width: auto;
+            margin: 0;
+        }
+        .close-btn:hover { color: #0f172a; }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 13.5px;
+            color: #334155;
+            text-decoration: none;
+            word-break: break-all;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .contact-item:hover {
+            background: #f1f5f9;
+            transform: translateX(-3px);
+        }
+        .contact-item i {
+            font-size: 18px;
+            width: 22px;
+            text-align: center;
+        }
+
+        /* --- Dark Mode Styles --- */
+        body.dark-mode {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        body.dark-mode .login-container {
+            background-color: #1e293b;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        body.dark-mode h2 { color: #f1f5f9; }
+        body.dark-mode label { color: #cbd5e1; }
+        body.dark-mode input {
+            background-color: #0f172a;
+            border-color: #475569;
+            color: #f1f5f9;
+        }
+        body.dark-mode input:focus { border-color: #3b82f6; }
+        body.dark-mode button { background-color: #3b82f6; }
+        body.dark-mode button:hover { background-color: #2563eb; }
+        body.dark-mode button:disabled { background-color: #475569; }
+        body.dark-mode .links-container { border-top-color: #334155; }
+        body.dark-mode .divider::before, body.dark-mode .divider::after { border-bottom-color: #334155; }
+        body.dark-mode .toggle-link, body.dark-mode .forgot-link { color: #60a5fa; }
+        body.dark-mode .form-options { color: #cbd5e1; }
+        body.dark-mode .toggle-password { color: #94a3b8; }
+        body.dark-mode .btn-google { background-color: #0f172a; color: #f1f5f9; border-color: #475569; }
+        body.dark-mode .btn-google:hover { background-color: #1e293b; }
+        body.dark-mode .btn-qr { background-color: #334155; }
+        body.dark-mode .btn-qr:hover { background-color: #475569; }
+        body.dark-mode .secret-box {
+            background-color: #0f172a;
+            border-color: #475569;
+            color: #cbd5e1;
+        }
+        body.dark-mode .modal-card {
+            background-color: #1e293b;
+            color: #f1f5f9;
+        }
+        body.dark-mode .modal-title { color: #f1f5f9; }
+        body.dark-mode .modal-header { border-bottom-color: #334155; }
+        body.dark-mode .contact-item {
+            background-color: #0f172a;
+            color: #cbd5e1;
+        }
+        body.dark-mode .contact-item:hover {
+            background-color: #334155;
+        }
+        body.dark-mode .close-btn { color: #64748b; }
+        body.dark-mode .close-btn:hover { color: #f1f5f9; }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="brand-badge notranslate" style="font-size: 11px; color: #64748b; margin-bottom: 5px;">Dev: Eslam Qandil v3.1.2</div>
+    <h2><i class="fa-solid fa-wallet" style="color: #3b82f6; margin-left: 5px;"></i><span class="notranslate">مسار المال</span></h2>
+   
+    {% if message %}
+    <div class="info-msg"><i class="fa-solid fa-circle-info"></i> {{ message }}</div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error-msg" style="display: block;"><i class="fa-solid fa-triangle-exclamation"></i> {{ error }}</div>
+    {% endif %}
+
+    <div id="errorBox" class="error-msg"></div>
+
+    <form id="passwordForm" action="/login" method="POST" onsubmit="return handleFormSubmit(event)">
+        <div class="input-group">
+            <label for="username">اسم المستخدم أو البريد الإلكتروني</label>
+            <div class="input-wrapper">
+                <input type="text" id="username" name="username" placeholder="اسم المستخدم" autocomplete="username" required translate="no">
+            </div>
+        </div>
+        <div class="input-group">
+            <label for="password">الرقم السري</label>
+            <div class="input-wrapper">
+                <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required translate="no">
+                <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+            </div>
+        </div>
+
+        <div class="form-options">
+            <label class="remember-me" for="rememberMe">
+                <input type="checkbox" id="rememberMe" name="remember" checked> تذكرني
+            </label>
+            <!-- الزر المربوط بفتح معلومات التواصل -->
+            <a href="javascript:void(0)" class="forgot-link" onclick="openContactModal()">نسيت كلمة المرور؟</a>
+        </div>
+
+        <button type="submit" id="btnPassword">
+            <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
+        </button>
+        {% if role == 'admin' %}
+<a href="/admin" class="nav-link" style="color: #ef4444; font-weight: bold;">
+    <i class="fa-solid fa-user-shield"></i> لوحة الأدمن
+</a>
+{% endif %}
+    </form>
+
+    <div id="phoneForm" class="hidden">
+        <div class="input-group" id="phoneGroup">
+            <label>رقم الهاتف المسجل</label>
+            <input type="tel" id="phone" placeholder="01000000000" translate="no">
+            <button type="button" id="btnSendOTP" onclick="sendOTP()">
+                <i class="fa-solid fa-mobile-screen"></i> إرسال كود التحقق 📱
+            </button>
+        </div>
+        <div class="input-group hidden" id="otpGroup">
+            <label>أدخل كود الـ OTP المستلم</label>
+            <input type="text" id="otpCode" placeholder="0000" maxlength="4" translate="no">
+            <button type="button" id="btnVerifyOTP" onclick="verifyOTP()">تأكيد الكود والدخول</button>
+        </div> 
+    </div>
+
+    <div id="authenticatorForm" class="hidden">
+        <div class="input-group">
+            <label>أدخل الكود من تطبيق Authenticator</label>
+            <input type="text" id="authCode" placeholder="000000" maxlength="6" translate="no">
+        </div>
+        <button type="button" id="btnVerifyAuth" onclick="verifyAuthCode()">تأكيد رمز الأمان 🔒</button>
+        <div class="secret-box">
+            🔑 مفتاح الربط بالتطبيق لأول مرة:<br>
+            <strong style="font-size: 14px; letter-spacing: 1px;" class="notranslate">{{ secret }}</strong>
+        </div>
+    </div>
+
+    <div class="divider"><span>أو يمكنك</span></div>
+
+    <!--<a href="/login/google" class="btn-google btn-secondary">
+        <i class="fa-brands fa-google" style="color: #ea4335;"></i> الدخول باستخدام Google
+    </a>--> 
+
+    <div style="margin-top: 15px; text-align: center;">
+    <a href="/login-as-guest" class="btn-guest" style="display: inline-block; padding: 10px 20px; background: #64748b; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; transition: background 0.2s;">
+        <i class="fa-solid fa-user-secret"></i> تجربة التطبيق كزائر
+    </a>
+</div>
+
+
+    <button type="button" class="btn-qr" onclick="openQRModal()">
+        <i class="fa-solid fa-qrcode"></i> عرض QR Code للحدث / الصفحة
+    </button>
+
+    <div class="links-container">
+        <span class="toggle-link" id="linkToPassword" onclick="switchForm('password')">🔑 الدخول باسم المستخدم والباسورد</span>
+         <span class="toggle-link" id="linkToPhone" onclick="switchForm('phone')"><!---📱 الدخول برقم الهاتف والـ OTP--></span>
+        <span class="toggle-link" id="linkToAuth" onclick="switchForm('auth')">🔒 الدخول عبر تطبيق Authenticator</span>
+        
+        <a href="/register" class="register-btn-link">✨ إنشاء حساب جديد</a>
+    </div>
+</div>
+
+<!-- Modal النافذة المنبثقة لمعلومات التواصل -->
+<div id="contactModal" class="modal-overlay" onclick="closeContactModalOnOuter(event)">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa-solid fa-key" style="color: #3b82f6;"></i> استعادة كلمة المرور</h3>
+            <button class="close-btn" onclick="closeContactModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p style="font-size: 13px; color: #64748b; margin-top: 0; margin-bottom: 15px;">
+            اختر الوسيلة المناسبة للتواصل مع الدعم الفني لإعادة تعيين كلمة المرور:
+        </p>
+
+        <!-- واتساب -->
+        <a href="javascript:void(0)" onclick="sendForgotMsg('whatsapp')" class="contact-item" style="border-right: 4px solid #25D366;">
+            <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
+            <span>إرسال عبر واتساب (WhatsApp)</span>
+        </a>
+
+        <!-- البريد الإلكتروني -->
+        <a href="javascript:void(0)" onclick="sendForgotMsg('email')" class="contact-item" style="border-right: 4px solid #ea4335;">
+            <i class="fa-solid fa-envelope" style="color: #ea4335;"></i>
+            <span>إرسال عبر البريد الإلكتروني</span>
+        </a>
+
+        <!-- لينكد إن -->
+        <a href="javascript:void(0)" onclick="sendForgotMsg('linkedin')" class="contact-item" style="border-right: 4px solid #0a66c2;">
+            <i class="fa-brands fa-linkedin" style="color: #0a66c2;"></i>
+            <span>تواصل عبر LinkedIn</span>
+        </a>
+
+        <!-- اتصال هاتفي مباشر -->
+        <a href="tel:+201036333006" class="contact-item" style="border-right: 4px solid #3b82f6;">
+            <i class="fa-solid fa-phone" style="color: #3b82f6;"></i>
+            <span dir="ltr">+20 1036333006</span>
+        </a>
+
+        <button type="button" onclick="closeContactModal()" style="margin-top: 15px; background: #64748b;">إغلاق</button>
+    </div>
+</div>
+
+<!-- Modal النافذة المنبثقة لعرض الـ QR Code الخاص بالصفحة -->
+<div id="qrModal" class="modal-overlay" onclick="closeQRModalOnOuter(event)">
+    <div class="modal-card" style="text-align: center;">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fa-solid fa-qrcode" style="color: #3b82f6;"></i> رمز QR لصفحة الدخول</h3>
+            <button class="close-btn" onclick="closeQRModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p style="font-size: 13px; color: #64748b; margin-top: 0; margin-bottom: 12px;">
+            امسح الرمز بواسطة كاميرا الموبايل لفتح صفحة تسجيل الدخول فوراً:
+        </p>
+
+        <!-- عرض صورة الـ QR Code المخصصة -->
+        <div id="qrcode-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px;">
+            <img id="customQrImg" 
+                 src="{{ url_for('static', filename='images/qr-code.png') }}" 
+                 onerror="this.onerror=null; this.src='/static/images/qr-code.png';" 
+                 alt="Masar Al-Mal Login QR Code" 
+                 style="max-width: 100%; max-height: 260px; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+            <button type="button" onclick="downloadQRCode()" style="background: #059669; font-size: 13px; margin-top: 0;">
+                <i class="fa-solid fa-download"></i> حفظ الـ QR
+            </button>
+            <button type="button" onclick="closeQRModal()" style="background: #64748b; font-size: 13px; margin-top: 0;">إغلاق</button>
+        </div>
+    </div>
+</div>
+
+<div class="watermark notranslate">
+    MASAR AL-MAL • ESLAM QANDIL
+</div>
+
+<script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
+
+    function openContactModal() {
+        const usernameVal = document.getElementById('username').value.trim();
+        if (!usernameVal) {
+            showError('برجاء كتابة اسم المستخدم أولاً في الخانة المخصصة قبل الضغط على نسيت كلمة المرور.');
+            document.getElementById('username').focus();
+            return;
+        }
+        document.getElementById('errorBox').style.display = 'none';
+        document.getElementById('contactModal').classList.add('active');
+    }
+
+    function closeContactModal() {
+        document.getElementById('contactModal').classList.remove('active');
+    }
+
+    function closeContactModalOnOuter(e) {
+        if (e.target.id === 'contactModal') {
+            closeContactModal();
+        }
+    }
+
+    /* --- وظائف Modal الـ QR Code --- */
+    function openQRModal() {
+        document.getElementById('qrModal').classList.add('active');
+    }
+
+    function closeQRModal() {
+        document.getElementById('qrModal').classList.remove('active');
+    }
+
+    function closeQRModalOnOuter(e) {
+        if (e.target.id === 'qrModal') {
+            closeQRModal();
+        }
+    }
+
+    function downloadQRCode() {
+        const img = document.getElementById('customQrImg');
+        if (img && img.src) {
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = 'Masar-AlMal-Login-QR.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+
+    // تجهيز النص وإرساله عبر الوسيلة المختارة
+    function sendForgotMsg(platform) {
+        const username = document.getElementById('username').value.trim();
+        const phoneNumber = "201036333006";
+        const emailAddress = "ebrahemeslam060@gmail.com";
+        const linkedinUrl = "https://www.linkedin.com/in/eslam-ebrahem-7266782a1";
+
+        const messageText = `مرحباً مهندس إسلام، لقد نسيت كلمة المرور الخاصة بحسابي في تطبيق (مسار المال).\nاسم المستخدم الخاص بي هو: [ ${username} ]\nبرجاء المساعدة في إعادة تعيين كلمة المرور.`;
+
+        if (platform === 'whatsapp') {
+            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(messageText)}`;
+            window.open(url, '_blank');
+        } 
+        else if (platform === 'email') {
+            const subject = encodeURIComponent("طلب إعادة تعيين كلمة المرور - تطبيق مسار المال");
+            const body = encodeURIComponent(messageText);
+            window.location.href = `mailto:${emailAddress}?subject=${subject}&body=${body}`;
+        } 
+        else if (platform === 'linkedin') {
+            navigator.clipboard.writeText(messageText).then(() => {
+                alert("تم نسخ طلب إعادة التعيين واسم المستخدم تلقائياً! يمكنك لصق الرسالة مباشرة في محادثة LinkedIn.");
+                window.open(linkedinUrl, '_blank');
+            }).catch(() => {
+                window.open(linkedinUrl, '_blank');
+            });
+        }
+    }
+
+    function switchForm(formType) {
+        document.getElementById('errorBox').style.display = 'none';
+        
+        document.getElementById('passwordForm').classList.add('hidden');
+        document.getElementById('phoneForm').classList.add('hidden');
+        document.getElementById('authenticatorForm').classList.add('hidden');
+        
+        document.getElementById('linkToPassword').classList.remove('hidden');
+        document.getElementById('linkToPhone').classList.remove('hidden');
+        document.getElementById('linkToAuth').classList.remove('hidden');
+
+        if(formType === 'password') {
+            document.getElementById('passwordForm').classList.remove('hidden');
+            document.getElementById('linkToPassword').classList.add('hidden');
+            document.getElementById('username').focus();
+        } else if(formType === 'phone') {
+            document.getElementById('phoneForm').classList.remove('hidden');
+            document.getElementById('phoneGroup').classList.remove('hidden');
+            document.getElementById('otpGroup').classList.add('hidden');
+            document.getElementById('linkToPhone').classList.add('hidden');
+            document.getElementById('phone').focus();
+        } else if(formType === 'auth') {
+            document.getElementById('authenticatorForm').classList.remove('hidden');
+            document.getElementById('linkToAuth').classList.add('hidden');
+            document.getElementById('authCode').focus();
+        }
+    }
+
+    switchForm('password');
+
+    function showError(msg) {
+        const box = document.getElementById('errorBox');
+        box.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${msg}`;
+        box.style.display = 'block';
+    }
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        loginWithPassword();
+        return false;
+    }
+
+    async function loginWithPassword() {
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value;
+        const remember = document.getElementById('rememberMe').checked;
+        const btn = document.getElementById('btnPassword');
+
+        if (!u || !p) {
+            showError('يرجى إدخال اسم المستخدم والرقم السري');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحقق...';
+
+        try {
+            let response = await fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({type: 'password', username: u, password: p, remember: remember})
+            });
+            let result = await response.json();
+            if(result.status === 'success') { 
+                window.location.href = result.redirect || '/'; 
+            } else { 
+                showError(result.message); 
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول';
+            }
+        } catch (e) {
+            showError('حدث خطأ في الاتصال بالخادم، حاول مرة أخرى.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول';
+        }
+    }
+
+    async function loginAsGuest() {
+        try {
+            let response = await fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({type: 'guest'})
+            });
+            let result = await response.json();
+            if(result.status === 'success') {
+                window.location.href = '/';
+            } else {
+                showError(result.message || 'تعذر الدخول كـ زائر حالياً');
+            }
+        } catch (e) {
+            showError('حدث خطأ أثناء محاولة الدخول كـ زائر.');
+        }
+    }
+
+    async function sendOTP() {
+        const ph = document.getElementById('phone').value.trim();
+        const btn = document.getElementById('btnSendOTP');
+
+        if (!ph) {
+            showError('يرجى إدخال رقم الهاتف');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الإرسال...';
+
+        try {
+            let response = await fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({type: 'phone', phone: ph})
+            });
+            let result = await response.json();
+            if(result.status === 'success') {
+                document.getElementById('phoneGroup').classList.add('hidden');
+                document.getElementById('otpGroup').classList.remove('hidden');
+                document.getElementById('errorBox').style.display = 'none';
+                document.getElementById('otpCode').focus();
+            } else { 
+                showError(result.message); 
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> إرسال كود التحقق 📱';
+            }
+        } catch (e) {
+            showError('حدث خطأ في الاتصال بالخادم.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-mobile-screen"></i> إرسال كود التحقق 📱';
+        }
+    }
+
+    async function verifyOTP() {
+        const ph = document.getElementById('phone').value.trim();
+        const code = document.getElementById('otpCode').value.trim();
+        const btn = document.getElementById('btnVerifyOTP');
+
+        if (!code) {
+            showError('يرجى إدخال كود التحقق');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التأكيد...';
+
+        try {
+            let response = await fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({type: 'otp', phone: ph, otp: code})
+            });
+            let result = await response.json();
+            if(result.status === 'success') { 
+                window.location.href = '/'; 
+            } else { 
+                showError(result.message); 
+                btn.disabled = false;
+                btn.innerText = 'تأكيد الكود والدخول';
+            }
+        } catch (e) {
+            showError('حدث خطأ في الاتصال بالخادم.');
+            btn.disabled = false;
+            btn.innerText = 'تأكيد الكود والدخول';
+        }
+    }
+
+    async function verifyAuthCode() {
+        const code = document.getElementById('authCode').value.replace(/\s+/g, '');
+        const btn = document.getElementById('btnVerifyAuth');
+
+        if (!code) {
+            showError('يرجى إدخال رمز الأمان');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التأكيد...';
+
+        try {
+            let response = await fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({type: 'authenticator', code: code})
+            });
+            let result = await response.json();
+            if(result.status === 'success') { 
+                window.location.href = '/'; 
+            } else { 
+                showError(result.message); 
+                btn.disabled = false;
+                btn.innerText = 'تأكيد رمز الأمان 🔒';
+            }
+        } catch (e) {
+            showError('حدث خطأ في الاتصال بالخادم.');
+            btn.disabled = false;
+            btn.innerText = 'تأكيد رمز الأمان 🔒';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    });
+</script>
+</body>
+</html>
