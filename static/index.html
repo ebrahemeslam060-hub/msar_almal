@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسار المال - التخطيط المالي والتغذوي</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-green: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-red: #ef4444;
+            --accent-purple: #8b5cf6;
+            --accent-amber: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); color: var(--text-main); min-height: 100vh; padding-bottom: 70px; }
+
+        .navbar {
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color); padding: 1rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;
+        }
+        .navbar-brand { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; color: var(--accent-green); }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn { background: transparent; border: none; color: var(--text-muted); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: all 0.3s; }
+        .nav-btn.active, .nav-btn:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Step Wizard UI */
+        .step-wizard-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(15, 23, 42, 0.5); padding: 15px 20px; border-radius: 12px;
+            margin-bottom: 20px; border: 1px solid var(--border-color);
+        }
+        .step-node { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-weight: 600; }
+        .step-node.active { color: var(--accent-amber); font-weight: 800; }
+        .step-node.completed { color: var(--accent-green); }
+        .step-number { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+        .step-node.active .step-number { background: var(--accent-amber); color: #000; }
+        .step-node.completed .step-number { background: var(--accent-green); color: #fff; }
+
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; margin-bottom: 20px; }
+
+        .card {
+            background: var(--bg-card); backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); margin-bottom: 20px;
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .card-title { font-size: 1.1rem; color: var(--text-muted); }
+        .card-value { font-size: 1.8rem; font-weight: 800; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; color: var(--text-muted); font-size: 0.85rem; }
+        .form-control { width: 100%; padding: 8px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; color: #fff; font-size: 0.95rem; outline: none; }
+        .form-control:focus { border-color: var(--accent-blue); }
+
+        .btn { background: var(--accent-blue); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: opacity 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn:hover { opacity: 0.9; }
+        .btn-green { background: var(--accent-green); }
+        .btn-red { background: var(--accent-red); }
+        .btn-amber { background: var(--accent-amber); color: #000; }
+        .btn-purple { background: var(--accent-purple); color: #fff; }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: var(--text-main); }
+
+        .recipe-item-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.2fr 40px;
+            gap: 10px;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .saved-meal-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+        }
+
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: right; margin-top: 10px; font-size: 0.9rem; }
+        th, td { padding: 10px; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--text-muted); font-weight: 600; }
+
+        .wizard-step-panel { display: none; }
+        .wizard-step-panel.active { display: block; }
+
+        @media (max-width: 768px) {
+            .nav-links { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 8px 0; }
+            .nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 0.75rem; padding: 4px; }
+            .step-wizard-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+            .recipe-item-row { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Header -->
+    <div class="navbar">
+        <div class="navbar-brand">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>مسار المال</span>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn active" onclick="switchTab('dashboard')"><i class="fa-solid fa-house"></i> الرئيسية</button>
+            <button class="nav-btn" onclick="switchTab('food-planner')"><i class="fa-solid fa-utensils"></i> ميزانية والتغذية</button>
+            <button class="nav-btn" onclick="switchTab('transactions')"><i class="fa-solid fa-list-check"></i> الحركات</button>
+            <button class="nav-btn" onclick="switchTab('setup')"><i class="fa-solid fa-sliders"></i> الإعدادات</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- 1. TAB: DASHBOARD -->
+        <div id="dashboard" class="tab-content active">
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-header"><span class="card-title">إجمالي الميزانية</span><i class="fa-solid fa-wallet" style="color: var(--accent-blue)"></i></div>
+                    <div class="card-value" id="val-income">0 ج.م</div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><span class="card-title">إجمالي المصروفات</span><i class="fa-solid fa-arrow-trend-down" style="color: var(--accent-red)"></i></div>
+                    <div class="card-value" id="val-expenses">0 ج.م</div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><span class="card-title">المتبقي الكلي</span><i class="fa-solid fa-piggy-bank" style="color: var(--accent-green)"></i></div>
+                    <div class="card-value" id="val-remaining">0 ج.م</div>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px; color: var(--text-muted);">تقسيم الميزانية الذكي (50/20/10/10/5/5)</h3>
+            <div class="grid-3" id="categories-grid"></div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h3 style="margin-bottom: 15px;">إضافة حركة مالية جديدة</h3>
+                    <form id="add-transaction-form">
+                        <div class="form-group">
+                            <label>نوع الحركة</label>
+                            <select id="tx-type" class="form-control" onchange="toggleCategorySelect()">
+                                <option value="expense">مصروف (-)</option>
+                                <option value="income">دخل إضافي (+)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>المبلغ (ج.م)</label>
+                            <input type="number" id="tx-amount" class="form-control" step="any" required placeholder="مثال: 250">
+                        </div>
+                        <div class="form-group" id="group-category">
+                            <label>الفئة المخصصة</label>
+                            <select id="tx-category" class="form-control">
+                                <option value="basics">الأساسيات (50%)</option>
+                                <option value="invest">الاستثمار (20%)</option>
+                                <option value="assets">تطوير الأصول (10%)</option>
+                                <option value="skills">المهارات (10%)</option>
+                                <option value="fun">الترفيه (5%)</option>
+                                <option value="emergency">الطوارئ (5%)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>الوصف / البيان</label>
+                            <input type="text" id="tx-desc" class="form-control" required placeholder="مثال: شراء مشتريات بقالة">
+                        </div>
+                        <button type="submit" class="btn btn-green" style="width: 100%;"><i class="fa-solid fa-plus"></i> تسجيل الحركة</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 15px;">توزيع النفقات اليومية</h3>
+                    <canvas id="expenseChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. TAB: MEAL & NUTRITION PLANNER -->
+        <div id="food-planner" class="tab-content">
+            
+            <div class="step-wizard-header">
+                <div class="step-node active" id="node-step-1">
+                    <div class="step-number">1</div>
+                    <span>إدخال الوجبات والوصفات</span>
+                </div>
+                <i class="fa-solid fa-chevron-left" style="color: var(--text-muted);"></i>
+                <div class="step-node" id="node-step-2">
+                    <div class="step-number">2</div>
+                    <span>إجمالي المشتريات المطلوبة</span>
+                </div>
+            </div>
+
+            <!-- STEP 1 PANEL: MEAL & RECIPE BUILDER -->
+            <div id="wizard-step-1" class="wizard-step-panel active">
+                <div class="card">
+                    <h3><i class="fa-solid fa-utensils" style="color: var(--accent-amber)"></i> إضافة أو تعديل الوجبة والوصفات</h3>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">
+                        قم بإدخال اسم الوجبة ومكوناتها يدوياً، وستحفظ الوجبات في دليلك الخاص بشكل دائم ولن تُحذف عند ضبط المصنع.
+                    </p>
+
+                    <!-- Meal Form Container -->
+                    <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid var(--border-color); padding: 18px; border-radius: 12px; margin-bottom: 20px;">
+                        <input type="hidden" id="editing-meal-id" value="">
+                        <div class="form-group">
+                            <label>اسم الوجبة</label>
+                            <input type="text" id="current-meal-name" class="form-control" placeholder="مثال: كشري، صينية بطاطس، بيتزا...">
+                        </div>
+
+                        <div id="recipe-inputs-container" style="margin-top: 15px;">
+                            <!-- Dynamic Recipe Fields Appear Here -->
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" onclick="addRecipeRow()">
+                                <i class="fa-solid fa-plus"></i> إضافة الوصفة / المكون
+                            </button>
+                            <button class="btn btn-green" id="btn-save-meal" onclick="finishMeal()">
+                                <i class="fa-solid fa-check"></i> حفظ الوجبة
+                            </button>
+                            <button class="btn btn-secondary" id="btn-cancel-edit" onclick="resetMealForm()" style="display:none;">
+                                إلغاء التعديل
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List of Saved Meals -->
+                    <h4 style="margin-bottom: 12px; color: var(--accent-blue);">
+                        <i class="fa-solid fa-list"></i> الوجبات والوصفات المضافة (<span id="meals-count">0</span>):
+                    </h4>
+                    <div id="saved-meals-list" style="max-height: 300px; overflow-y: auto;">
+                        <div style="text-align: center; color: var(--text-muted); padding: 15px;">لم يتم إضافة وجبات بعد.</div>
+                    </div>
+
+                    <div style="margin-top: 25px; display: flex; justify-content: flex-end;">
+                        <button class="btn btn-amber" onclick="goToWizardStep(2)">
+                            الخطوة التالية: حساب المشتريات والتكلفة <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2 PANEL: TOTAL SHOPPING LIST & CALCULATIONS -->
+            <div id="wizard-step-2" class="wizard-step-panel">
+                <div class="card">
+                    <h3><i class="fa-solid fa-calculator" style="color: var(--accent-blue)"></i> تجميع وحساب الكميات المشتريات والتكلفة</h3>
+                    
+                    <div class="grid-2" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>تكرار الخطة (عدد الأيام)</label>
+                            <input type="number" id="plan-days" class="form-control" value="30" min="1" onchange="calculateTotals()" oninput="calculateTotals()">
+                        </div>
+                        <div class="form-group">
+                            <label>إجمالي التكلفة المحسوبة تلقائياً (ج.م)</label>
+                            <input type="number" id="estimated-budget" class="form-control" placeholder="يحسب تلقائياً من الأسعار" readonly style="background: rgba(16, 185, 129, 0.1); color: var(--accent-green); font-weight: bold;">
+                        </div>
+                    </div>
+
+                    <!-- شريط معلومات التكرار والتوزيع الدوري -->
+                    <div id="rotation-info" style="background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent-blue); padding: 12px; border-radius: 8px; margin-bottom: 15px; color: var(--accent-blue); font-size: 0.9rem;">
+                        <!-- يتم تحديث معلومات التكرار هنا تلقائياً -->
+                    </div>
+
+                    <hr style="border-color: var(--border-color); margin: 20px 0;">
+
+                    <div class="card-header">
+                        <h4 style="color: var(--accent-green);"><i class="fa-solid fa-cart-flatbed"></i> إجمالي المكونات والأسعار المطلوبة للمشتريات:</h4>
+                        <button class="btn btn-green" onclick="commitFoodToExpenses()"><i class="fa-solid fa-file-invoice-dollar"></i> ترحيل التكلفة للأساسيات</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>اسم المكون / الوصفة</th>
+                                    <th>إجمالي الكمية المطلوبة للأيام</th>
+                                    <th>سعر الكيلو / الوحدة</th>
+                                    <th>التكلفة التقديرية الإجمالية</th>
+                                </tr>
+                            </thead>
+                            <tbody id="totals-table-body">
+                                <tr><td colspan="4" style="text-align:center; color: var(--text-muted);">لا توجد وجبات محسوبة بعد.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; justify-content: flex-start;">
+                        <button class="btn btn-secondary" onclick="goToWizardStep(1)">
+                            <i class="fa-solid fa-arrow-right"></i> العودة لتعديل الوجبات
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 3. TAB: TRANSACTIONS HISTORY -->
+        <div id="transactions" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3>أرشيف الحركات المالية</h3>
+                    <button class="btn" onclick="exportToCSV()"><i class="fa-solid fa-file-excel"></i> تصدير Excel (CSV)</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>النوع</th>
+                                <th>الفئة</th>
+                                <th>البيان</th>
+                                <th>المبلغ</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tx-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. TAB: SETUP -->
+        <div id="setup" class="tab-content">
+            <div class="card" style="max-width: 600px; margin: 0 auto;">
+                <h3 style="margin-bottom: 20px;">إعداد الدورة المالية الحالية والتنبيهات</h3>
+                <form id="setup-form">
+                    <div class="form-group">
+                        <label>الراتب الأساسي / دخل الدورة (ج.م)</label>
+                        <input type="number" id="setup-salary" class="form-control" required placeholder="مثال: 6000">
+                    </div>
+                    <div class="form-group">
+                        <label>تاريخ بداية الدورة</label>
+                        <input type="date" id="setup-start-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>عدد أيام تغطية الدورة (مثلاً: 30 يوم)</label>
+                        <input type="number" id="setup-days" class="form-control" value="30" required>
+                    </div>
+                    <button type="submit" class="btn btn-green" style="width: 100%;"><i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات</button>
+                </form>
+
+                <hr style="margin: 20px 0; border-color: var(--border-color);">
+                
+                <h4 style="margin-bottom: 10px; color: var(--accent-purple);"><i class="fa-solid fa-bell"></i> تفعيل إشعارات التذكير بالمصروفات</h4>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;">سيقوم التطبيق بتنبيهك بصوت وإشعار يومياً إذا لم تقم بتسجيل مصروفاتك.</p>
+                <button class="btn btn-purple" onclick="requestNotificationPermission()" style="width: 100%; margin-bottom: 10px;">
+                    <i class="fa-solid fa-bell"></i> تفعيل الإشعارات والتنبيه الصوتي
+                </button>
+                <button class="btn btn-secondary" onclick="triggerExpenseReminder(true)" style="width: 100%;">
+                    <i class="fa-solid fa-volume-high"></i> تجربة الإشعار والصوت الآن
+                </button>
+
+                <hr style="margin: 20px 0; border-color: var(--border-color);">
+                <button class="btn btn-red" onclick="resetAllData()" style="width: 100%;"><i class="fa-solid fa-rotate-right"></i> مسح البيانات المالية فقط (حفظ الوجبات)</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const CATEGORIES = {
+            basics: { label: "الأساسيات", ratio: 0.50, color: "#3b82f6" },
+            invest: { label: "الاستثمار", ratio: 0.20, color: "#10b981" },
+            assets: { label: "تطوير الأصول", ratio: 0.10, color: "#8b5cf6" },
+            skills: { label: "المهارات", ratio: 0.10, color: "#f59e0b" },
+            fun: { label: "الترفيه", ratio: 0.05, color: "#ec4899" },
+            emergency: { label: "الطوارئ", ratio: 0.05, color: "#ef4444" }
+        };
+
+        let state = {
+            salary: 0,
+            startDate: '',
+            days: 30,
+            transactions: []
+        };
+
+        let mealsData = []; // الوجبات محفوظة بـ IndexedDB بشكل مستقل
+        let db = null;
+        let chartInstance = null;
+
+        // --- INDEXEDDB IMPLEMENTATION FOR PERMANENT MEALS STORAGE ---
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('MasarAlMalMealsDB', 1);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('meals')) {
+                        db.createObjectStore('meals', { keyPath: 'id' });
+                    }
+                };
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+                request.onerror = (e) => reject(e);
+            });
+        }
+
+        async function loadMealsFromDB() {
+            if (!db) await initDB();
+            return new Promise((resolve) => {
+                const tx = db.transaction('meals', 'readonly');
+                const store = tx.objectStore('meals');
+                const req = store.getAll();
+                req.onsuccess = () => {
+                    mealsData = req.result || [];
+                    renderMealsList();
+                    resolve(mealsData);
+                };
+            });
+        }
+
+        async function saveMealToDB(meal) {
+            if (!db) await initDB();
+            const tx = db.transaction('meals', 'readwrite');
+            const store = tx.objectStore('meals');
+            store.put(meal);
+            tx.oncomplete = () => {
+                loadMealsFromDB();
+            };
+        }
+
+        async function deleteMealFromDB(id) {
+            if (!db) await initDB();
+            const tx = db.transaction('meals', 'readwrite');
+            const store = tx.objectStore('meals');
+            store.delete(id);
+            tx.oncomplete = () => {
+                loadMealsFromDB();
+            };
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await initDB();
+            await loadMealsFromDB();
+            loadState();
+            renderDashboard();
+            renderTransactions();
+            document.getElementById('setup-start-date').valueAsDate = new Date();
+            checkAndScheduleReminder();
+        });
+
+        function loadState() {
+            const saved = localStorage.getItem('masar_al_mal_data');
+            if (saved) {
+                state = JSON.parse(saved);
+                document.getElementById('setup-salary').value = state.salary || 0;
+                document.getElementById('setup-start-date').value = state.startDate || '';
+                document.getElementById('setup-days').value = state.days || 30;
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('masar_al_mal_data', JSON.stringify(state));
+            renderDashboard();
+            renderTransactions();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (event) event.currentTarget.classList.add('active');
+        }
+
+        function goToWizardStep(stepNum) {
+            document.querySelectorAll('.wizard-step-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(`wizard-step-${stepNum}`).classList.add('active');
+
+            for (let i = 1; i <= 2; i++) {
+                const node = document.getElementById(`node-step-${i}`);
+                node.classList.remove('active', 'completed');
+                if (i === stepNum) node.classList.add('active');
+                else if (i < stepNum) node.classList.add('completed');
+            }
+
+            if (stepNum === 2) {
+                calculateTotals();
+            }
+        }
+
+        // --- NOTIFICATIONS & AUDIO REMINDER SYSTEM ---
+
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                alert("المتصفح لا يدعم نظام الإشعارات.");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    alert("تم تفعيل الإشعارات والتنبيه الصوتي بنجاح!");
+                } else {
+                    alert("لم يتم تفعيل الإشعارات. يرجى السماح بالإشعارات من إعدادات المتصفح.");
+                }
+            });
+        }
+
+        function playReminderSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+                
+                // النغمة الأولى
+                const osc1 = ctx.createOscillator();
+                const gain1 = ctx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(523.25, now); // C5
+                gain1.gain.setValueAtTime(0.3, now);
+                gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc1.connect(gain1);
+                gain1.connect(ctx.destination);
+                osc1.start(now);
+                osc1.stop(now + 0.4);
+
+                // النغمة الثانية
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(659.25, now + 0.15); // E5
+                gain2.gain.setValueAtTime(0.3, now + 0.15);
+                gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+                osc2.start(now + 0.15);
+                osc2.stop(now + 0.6);
+            } catch (e) {
+                console.log("صوت الإشعار غير مدعوم بدون تفاعل:", e);
+            }
+        }
+
+        function triggerExpenseReminder(force = false) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const hasExpenseToday = state.transactions.some(t => t.date === todayStr && t.type === 'expense');
+
+            if (!hasExpenseToday || force) {
+                playReminderSound();
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification("مسار المال 💰", {
+                        body: "انت مسجلتش مصروفاتك النهارده",
+                        icon: "https://cdn-icons-png.flaticon.com/512/2983/2983780.png"
+                    });
+                } else if (force) {
+                    alert("انت مسجلتش مصروفاتك النهارده");
+                }
+            }
+        }
+
+        function checkAndScheduleReminder() {
+            // فحص إدخال المصروفات تلقائياً
+            triggerExpenseReminder(false);
+            // إعادة التذكير كل ساعتين إذا لم يسجل
+            setInterval(() => {
+                triggerExpenseReminder(false);
+            }, 2 * 60 * 60 * 1000);
+        }
+
+        // --- DYNAMIC MEALS & RECIPES SYSTEM ---
+
+        function addRecipeRow(name = '', qty = '', unit = 'جرام', unitPrice = '') {
+            const container = document.getElementById('recipe-inputs-container');
+            const rowId = Date.now() + Math.random().toString(36).substring(2, 5);
+            
+            const html = `
+                <div class="recipe-item-row" id="row-${rowId}">
+                    <input type="text" class="form-control recipe-name" placeholder="المكون (طماطم، أرز...)" value="${name}">
+                    <input type="number" class="form-control recipe-qty" placeholder="الكمية" step="any" value="${qty}">
+                    <select class="form-control recipe-unit">
+                        <option value="جرام" ${unit === 'جرام' ? 'selected' : ''}>جرام</option>
+                        <option value="كيلو" ${unit === 'كيلو' ? 'selected' : ''}>كيلو</option>
+                        <option value="مللي" ${unit === 'مللي' ? 'selected' : ''}>مللي</option>
+                        <option value="حبة" ${unit === 'حبة' ? 'selected' : ''}>حبة</option>
+                        <option value="معلقة" ${unit === 'معلقة' ? 'selected' : ''}>معلقة</option>
+                    </select>
+                    <input type="number" class="form-control recipe-price" placeholder="سعر الكيلو/الوحدة (اختياري)" step="any" value="${unitPrice}">
+                    <button class="btn btn-red" onclick="removeRecipeRow('${rowId}')" style="padding: 6px;"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeRecipeRow(rowId) {
+            const row = document.getElementById(`row-${rowId}`);
+            if (row) row.remove();
+        }
+
+        async function finishMeal() {
+            const mealNameInput = document.getElementById('current-meal-name');
+            const mealName = mealNameInput.value.trim();
+            const editingId = document.getElementById('editing-meal-id').value;
+
+            if (!mealName) {
+                alert('يرجى إدخال اسم الوجبة أولاً!');
+                return;
+            }
+
+            const recipeRows = document.querySelectorAll('.recipe-item-row');
+            const recipes = [];
+
+            recipeRows.forEach(row => {
+                const name = row.querySelector('.recipe-name').value.trim();
+                const qty = parseFloat(row.querySelector('.recipe-qty').value) || 0;
+                const unit = row.querySelector('.recipe-unit').value;
+                const unitPrice = parseFloat(row.querySelector('.recipe-price').value) || 0;
+
+                if (name && qty > 0) {
+                    recipes.push({ name, qty, unit, unitPrice });
+                }
+            });
+
+            if (recipes.length === 0) {
+                alert('يرجى إضافة وصفة/مكون واحد على الأقل للوجبة!');
+                return;
+            }
+
+            const mealObject = {
+                id: editingId ? Number(editingId) : Date.now(),
+                name: mealName,
+                recipes: recipes
+            };
+
+            await saveMealToDB(mealObject);
+            resetMealForm();
+        }
+
+        function editMeal(id) {
+            const meal = mealsData.find(m => m.id === id);
+            if (!meal) return;
+
+            document.getElementById('editing-meal-id').value = meal.id;
+            document.getElementById('current-meal-name').value = meal.name;
+
+            const container = document.getElementById('recipe-inputs-container');
+            container.innerHTML = '';
+
+            meal.recipes.forEach(r => {
+                addRecipeRow(r.name, r.qty, r.unit, r.unitPrice || '');
+            });
+
+            document.getElementById('btn-save-meal').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> تحديث الوجبة';
+            document.getElementById('btn-cancel-edit').style.display = 'inline-flex';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetMealForm() {
+            document.getElementById('editing-meal-id').value = '';
+            document.getElementById('current-meal-name').value = '';
+            document.getElementById('recipe-inputs-container').innerHTML = '';
+            document.getElementById('btn-save-meal').innerHTML = '<i class="fa-solid fa-check"></i> حفظ الوجبة';
+            document.getElementById('btn-cancel-edit').style.display = 'none';
+        }
+
+        function renderMealsList() {
+            const container = document.getElementById('saved-meals-list');
+            const countEl = document.getElementById('meals-count');
+            container.innerHTML = '';
+            countEl.innerText = mealsData.length;
+
+            if (mealsData.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 15px;">لم يتم إضافة وجبات بعد.</div>';
+                return;
+            }
+
+            mealsData.forEach((meal, idx) => {
+                const recipesText = meal.recipes.map(r => {
+                    const priceInfo = r.unitPrice > 0 ? ` (سعر الكيلو/الوحدة: ${r.unitPrice} ج.م)` : '';
+                    return `${r.qty} ${r.unit} ${r.name}${priceInfo}`;
+                }).join(' ، ');
+
+                const card = `
+                    <div class="saved-meal-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong style="color: var(--accent-amber); font-size: 1.05rem;">
+                                ${idx + 1}. ${meal.name}
+                            </strong>
+                            <div>
+                                <button onclick="editMeal(${meal.id})" style="background:none; border:none; color: var(--accent-blue); cursor:pointer; margin-left: 8px;" title="تعديل الوجبة">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button onclick="deleteMeal(${meal.id})" style="background:none; border:none; color: var(--accent-red); cursor:pointer;" title="حذف الوجبة">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div style="color: var(--text-muted); font-size: 0.85rem; margin-top: 6px;">
+                            <strong>الوصفة:</strong> ${recipesText}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', card);
+            });
+        }
+
+        async function deleteMeal(id) {
+            if (confirm('هل أنت متأكد من حذف هذه الوجبة؟')) {
+                if (document.getElementById('editing-meal-id').value == id) {
+                    resetMealForm();
+                }
+                await deleteMealFromDB(id);
+            }
+        }
+
+        // --- CALCULATIONS & ROTATION ---
+
+        function calculateTotals() {
+            const targetDays = parseInt(document.getElementById('plan-days').value) || 1;
+            const tbody = document.getElementById('totals-table-body');
+            const rotationInfo = document.getElementById('rotation-info');
+            tbody.innerHTML = '';
+
+            const numMeals = mealsData.length;
+
+            if (numMeals === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-muted);">لا توجد وجبات مضافة لحسابها.</td></tr>';
+                document.getElementById('estimated-budget').value = 0;
+                rotationInfo.innerHTML = '<i class="fa-solid fa-info-circle"></i> يرجى إضافة وجبات أولاً في الخطوة الأولى.';
+                return;
+            }
+
+            const fullCycles = Math.floor(targetDays / numMeals);
+            const extraDays = targetDays % numMeals;
+
+            let infoMessage = `<i class="fa-solid fa-rotate"></i> <strong>نظام التدوير اليومي:</strong> تغطية <strong>${targetDays} يوم</strong> من خلال <strong>${numMeals} وجبة</strong> مضافة.`;
+            if (fullCycles > 0) {
+                infoMessage += `<br>• تتكرر الـ ${numMeals} وجبة بالكامل <strong>${fullCycles} مرة</strong> (${fullCycles * numMeals} يوم).`;
+            }
+            if (extraDays > 0) {
+                infoMessage += `<br>• ثم تتكرر أول <strong>${extraDays} وجبة</strong> من البداية لتكملة باقي الأيام.`;
+            }
+            rotationInfo.innerHTML = infoMessage;
+
+            const totals = {};
+            let grandTotalPrice = 0;
+
+            for (let day = 0; day < targetDays; day++) {
+                const mealIndex = day % numMeals;
+                const currentMeal = mealsData[mealIndex];
+
+                currentMeal.recipes.forEach(rec => {
+                    const cleanName = rec.name.trim().toLowerCase();
+                    const cleanUnit = rec.unit.trim().toLowerCase();
+                    const key = `${cleanName}_${cleanUnit}`;
+
+                    if (!totals[key]) {
+                        totals[key] = {
+                            displayName: rec.name.trim(),
+                            unit: rec.unit,
+                            totalQty: 0,
+                            unitPrice: rec.unitPrice || 0
+                        };
+                    }
+
+                    totals[key].totalQty += parseFloat(rec.qty) || 0;
+                    if (rec.unitPrice > 0) {
+                        totals[key].unitPrice = rec.unitPrice;
+                    }
+                });
+            }
+
+            Object.keys(totals).forEach(key => {
+                const item = totals[key];
+                
+                let itemTotalPrice = 0;
+                if (item.unitPrice > 0) {
+                    if (item.unit === 'جرام' || item.unit === 'مللي') {
+                        itemTotalPrice = (item.totalQty / 1000) * item.unitPrice;
+                    } else {
+                        itemTotalPrice = item.totalQty * item.unitPrice;
+                    }
+                }
+
+                grandTotalPrice += itemTotalPrice;
+
+                const priceText = item.unitPrice > 0 
+                    ? `${item.unitPrice.toLocaleString()} ج.م / ${item.unit === 'جرام' ? 'كيلو' : item.unit}`
+                    : '<span style="color:var(--text-muted);">غير محدد</span>';
+
+                const totalPriceText = itemTotalPrice > 0 
+                    ? `<strong style="color: var(--accent-green);">${itemTotalPrice.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} ج.م</strong>`
+                    : '<span style="color:var(--text-muted);">-</span>';
+
+                const tr = `
+                    <tr>
+                        <td><strong>${item.displayName}</strong></td>
+                        <td style="color: var(--accent-amber); font-weight: bold;">
+                            ${item.totalQty.toLocaleString()} ${item.unit}
+                        </td>
+                        <td>${priceText}</td>
+                        <td>${totalPriceText}</td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', tr);
+            });
+
+            document.getElementById('estimated-budget').value = Math.round(grandTotalPrice);
+        }
+
+        function commitFoodToExpenses() {
+            const estBudget = parseFloat(document.getElementById('estimated-budget').value) || 0;
+            if (estBudget <= 0) {
+                alert('لم يتم تحديد أي أسعار للمكونات لحساب التكلفة الإجمالية والترحيل!');
+                return;
+            }
+
+            if (confirm(`خصم مبلغ التكلفة الإجمالية المحسوبة (${estBudget.toLocaleString()} ج.م) وتسجيله كمصروف في الأساسيات؟`)) {
+                state.transactions.unshift({
+                    id: Date.now(),
+                    date: new Date().toISOString().split('T')[0],
+                    type: 'expense',
+                    amount: estBudget,
+                    category: 'basics',
+                    desc: `مشتريات تغطية طعام لعدد (${document.getElementById('plan-days').value}) يوم`
+                });
+                saveState();
+                alert('تم الترحيل بنجاح!');
+                switchTab('dashboard');
+            }
+        }
+
+        // --- DASHBOARD & CORE LOGIC ---
+        document.getElementById('setup-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            state.salary = parseFloat(document.getElementById('setup-salary').value);
+            state.startDate = document.getElementById('setup-start-date').value;
+            state.days = parseInt(document.getElementById('setup-days').value);
+            saveState();
+            alert('تم حفظ الإعدادات!');
+            switchTab('dashboard');
+        });
+
+        document.getElementById('add-transaction-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const type = document.getElementById('tx-type').value;
+            const amount = parseFloat(document.getElementById('tx-amount').value);
+            const category = document.getElementById('tx-category').value;
+            const desc = document.getElementById('tx-desc').value;
+
+            state.transactions.unshift({
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                type,
+                amount,
+                category: type === 'expense' ? category : 'income_add',
+                desc
+            });
+
+            saveState();
+            document.getElementById('tx-amount').value = '';
+            document.getElementById('tx-desc').value = '';
+        });
+
+        function toggleCategorySelect() {
+            const type = document.getElementById('tx-type').value;
+            document.getElementById('group-category').style.display = (type === 'income') ? 'none' : 'block';
+        }
+
+        function renderDashboard() {
+            const totalIncomesAdd = state.transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
+            const totalBudget = state.salary + totalIncomesAdd;
+            const totalExpenses = state.transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+            const remaining = totalBudget - totalExpenses;
+
+            document.getElementById('val-income').innerText = `${totalBudget.toLocaleString()} ج.م`;
+            document.getElementById('val-expenses').innerText = `${totalExpenses.toLocaleString()} ج.م`;
+            document.getElementById('val-remaining').innerText = `${remaining.toLocaleString()} ج.م`;
+
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = '';
+
+            const categorySpent = {};
+            Object.keys(CATEGORIES).forEach(k => categorySpent[k] = 0);
+
+            state.transactions.filter(t => t.type === 'expense').forEach(t => {
+                if (categorySpent[t.category] !== undefined) {
+                    categorySpent[t.category] += t.amount;
+                }
+            });
+
+            Object.keys(CATEGORIES).forEach(catKey => {
+                const cat = CATEGORIES[catKey];
+                const targetBudget = totalBudget * cat.ratio;
+                const spent = categorySpent[catKey];
+                const pct = targetBudget > 0 ? Math.min((spent / targetBudget) * 100, 100) : 0;
+
+                const html = `
+                    <div class="card" style="border-right: 4px solid ${cat.color}">
+                        <div class="card-header">
+                            <span class="card-title">${cat.label} (${cat.ratio * 100}%)</span>
+                            <span style="font-size: 0.85rem; color:${cat.color}">${spent.toLocaleString()} / ${targetBudget.toLocaleString()} ج.م</span>
+                        </div>
+                        <div class="card-value" style="font-size: 1.2rem;">المتبقي: ${(targetBudget - spent).toLocaleString()} ج.م</div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width: ${pct}%; background: ${cat.color}"></div>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', html);
+            });
+
+            renderChart(categorySpent);
+        }
+
+        function renderChart(categorySpent) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(CATEGORIES).map(k => CATEGORIES[k].label),
+                    datasets: [{
+                        data: Object.keys(CATEGORIES).map(k => categorySpent[k]),
+                        backgroundColor: Object.keys(CATEGORIES).map(k => CATEGORIES[k].color),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Cairo' } } } }
+                }
+            });
+        }
+
+        function renderTransactions() {
+            const tbody = document.getElementById('tx-table-body');
+            tbody.innerHTML = '';
+
+            if (state.transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">لا توجد حركات مسجلة.</td></tr>';
+                return;
+            }
+
+            state.transactions.forEach(tx => {
+                const isIncome = tx.type === 'income';
+                const catLabel = isIncome ? 'دخل إضافي' : (CATEGORIES[tx.category]?.label || tx.category);
+
+                const tr = `
+                    <tr>
+                        <td>${tx.date}</td>
+                        <td><span style="color: ${isIncome ? 'var(--accent-green)' : 'var(--accent-red)'}">${isIncome ? 'دخل' : 'مصروف'}</span></td>
+                        <td>${catLabel}</td>
+                        <td>${tx.desc}</td>
+                        <td style="font-weight: bold; color: ${isIncome ? 'var(--accent-green)' : 'var(--accent-red)'}">${tx.amount.toLocaleString()} ج.م</td>
+                        <td><button onclick="deleteTransaction(${tx.id})" style="background:none; border:none; color:var(--accent-red); cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', tr);
+            });
+        }
+
+        function deleteTransaction(id) {
+            if (confirm('هل أنت متأكد من الحذف؟')) {
+                state.transactions = state.transactions.filter(t => t.id !== id);
+                saveState();
+            }
+        }
+
+        function exportToCSV() {
+            if (state.transactions.length === 0) return alert('لا توجد بيانات للتصدير!');
+            let csv = '\uFEFFالتاريخ,النوع,الفئة,البيان,المبلغ\n';
+            state.transactions.forEach(t => {
+                const cat = t.type === 'income' ? 'دخل إضافي' : (CATEGORIES[t.category]?.label || t.category);
+                csv += `"${t.date}","${t.type}","${cat}","${t.desc}","${t.amount}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `مسار_المال_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function resetAllData() {
+            if (confirm('تنبيه: سيتم مسح السجل المالي والمصروفات فقط، وستظل الوجبات محفوظة بالكامل. هل تريد الاستمرار؟')) {
+                localStorage.removeItem('masar_al_mal_data');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
